@@ -9,21 +9,22 @@ import Foundation
 import QKMRZParser
 
 public class QKMRZScanResult {
-    public let documentImage: UIImage
-    public let documentType: String
-    public let countryCode: String
-    public let surnames: String
-    public let givenNames: String
-    public let documentNumber: String
-    public let nationality: String
+    public let documentImage: UIImage?
+    public let documentType: String?
+    public let countryCode: String?
+    public let surnames: String?
+    public let givenNames: String?
+    public let documentNumber: String?
+    public let nationality: String?
     public let birthDate: Date?
     public let sex: String?
     public let expiryDate: Date?
-    public let personalNumber: String
+    public let personalNumber: String?
     public let personalNumber2: String?
     
     public lazy fileprivate(set) var faceImage: UIImage? = {
-        guard let documentImage = CIImage(image: documentImage) else {
+        
+        guard let image = documentImage, let documentImage = CIImage(image: image) else {
             return nil
         }
         
@@ -56,5 +57,20 @@ public class QKMRZScanResult {
         expiryDate = mrzResult.expiryDate
         personalNumber = mrzResult.personalNumber
         personalNumber2 = mrzResult.personalNumber2
+    }
+    
+    public init(documentImage image: UIImage) {
+        documentImage = image
+        documentType = nil
+        countryCode = nil
+        surnames = nil
+        givenNames = nil
+        documentNumber = nil
+        nationality = nil
+        birthDate = nil
+        sex = nil
+        expiryDate = nil
+        personalNumber = nil
+        personalNumber2 = nil
     }
 }

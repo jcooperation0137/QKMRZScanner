@@ -14,6 +14,7 @@ import Vision
 
 public protocol QKMRZScannerViewDelegate: class {
     func mrzScannerView(_ mrzScannerView: QKMRZScannerView, didFind scanResult: QKMRZScanResult)
+    func mrzScannerView(_ mrzScannerView: QKMRZScannerView, didTake photo: UIImage)
 }
 
 @IBDesignable
@@ -29,6 +30,7 @@ public class QKMRZScannerView: UIView {
     @objc public dynamic var isScanning = false
     public var vibrateOnResult = true
     public weak var delegate: QKMRZScannerViewDelegate?
+    fileprivate var capturedImage: CGImage?
     
     public var cutoutRect: CGRect {
         return cutoutView.cutoutRect
@@ -78,6 +80,14 @@ public class QKMRZScannerView: UIView {
     
     public func stopScanning() {
         captureSession.stopRunning()
+    }
+    
+    // MARK: take a photo
+    public func takePhoto() {
+        guard let cgImage = self.capturedImage else {
+            return
+        }
+        delegate?.mrzScannerView(self, didTake: self.enlargedDocumentImage(from: cgImage))
     }
     
     // MARK: MRZ
@@ -250,6 +260,8 @@ extension QKMRZScannerView: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let cgImage = CMSampleBufferGetImageBuffer(sampleBuffer)?.cgImage else {
             return
         }
+        
+        self.capturedImage = cgImage
         
         let documentImage = self.documentImage(from: cgImage)
         let imageRequestHandler = VNImageRequestHandler(cgImage: documentImage, options: [:])
